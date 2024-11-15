@@ -22,4 +22,3 @@ df = pd.DataFrame(data)
 # DataFrame'i bir Excel dosyasına yaz
 df.to_excel('output.xlsx', index=False, header=False)
 
-
