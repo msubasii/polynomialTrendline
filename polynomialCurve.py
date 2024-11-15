@@ -49,12 +49,12 @@ else:
     equation_text = f"y = {polynomial_coefficients[0]:.4f}x⁴ + {polynomial_coefficients[1]:.4f}x³ + {polynomial_coefficients[2]:.4f}x² + {polynomial_coefficients[3]:.4f}x + {polynomial_coefficients[4]:.4f}"
     plt.figtext(0.5, 0.95, equation_text, ha='center', va='top', fontsize=12, bbox=dict(facecolor='white', alpha=0.7))
 
-    # labels of the graph
+    # labels of the graph 
     plt.xlabel(x_name)
     plt.ylabel(y_name)
     plt.legend()
     plt.show()
-
+      
     # Output the polynomial coefficients
     print("Polynomial Coefficients:", polynomial_coefficients)
 
