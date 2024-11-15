@@ -1,62 +1,73 @@
-
-#library importation
+# Gerekli kütüphaneleri ekliyoruz
 import numpy as np
 import matplotlib.pyplot as plt
+import itertools
 
-# in this function i collect the data from the user
+# Kullanıcıdan veri toplama fonksiyonu
 def collect_data(variable_name):
     data = []
-    #for showing that the data's are ended use 'E' to close the arry
-    print(f"Enter the values for {variable_name} (enter 'E' to finish):")
+    print(f"{variable_name} değerlerini girin (girişi bitirmek için 'E' yazın):")
     while True:
-        value = input(f"Enter {variable_name} value: ")
-        if value.upper() == 'E':  # Stop input if 'E' is entered
+        value = input(f"{variable_name} değeri: ")
+        if value.upper() == 'E':  # 'E' ile girişi sonlandır
             break
         try:
-            # Replace commas with dots to handle the decimal separator issue ()
             value = value.replace(',', '.')
             data.append(float(value))
         except ValueError:
-            print("Please enter a valid number.")
+            print("Lütfen geçerli bir sayı girin.")
     return np.array(data)
 
-# Ask the user for the names of the data arrays
-x_name = input("Enter the name of the data (e.g., 'speed'): ")
-y_name = input("Enter the name of the data (e.g., 'MW'): ")
+# Renkler ve çizgi stilleri için döngüleri oluşturmak için itertools kütüphanesini kullanıyoruz
+colors = itertools.cycle(['r', 'g', 'b', 'm', 'c', 'y', 'k'])
+line_styles = itertools.cycle(['-', '--', '-.', ':'])
 
-# create the data arrays according to the names that are entered by user
-x = collect_data(x_name)
-y = collect_data(y_name)
+# Grafik oluşturma işlemi
+plt.figure(figsize=(10, 6))
 
-# Check if the lengths of the x and y arrays are the same since they must be equal
-if len(x) != len(y):
-    print("Error: x and y arrays must have the same length.")
-else:
-    # 4th degree polynomial trendline fitting 
+# İlk olarak x ve y ekseni isimlerini soruyoruz
+x_name = input("x ekseni verisi adını girin (örneğin, 'hız'): ")
+y_name = input("y ekseni verisi adını girin (örneğin, 'MW'): ")
+
+# Birden fazla rüzgar gülünün verilerini eklemek için döngü
+while True:
+    # Rüzgar gülü ismi soruluyor
+    wind_turbine_name = input("Rüzgar gülünün adını girin (örneğin, 'Rüzgar Gülü 1'): ")
+
+    # Verileri topluyoruz
+    x = collect_data(x_name)
+    y = collect_data(y_name)
+
+    # x ve y uzunlukları kontrolü
+    if len(x) != len(y):
+        print("Hata: x ve y dizileri aynı uzunlukta olmalı.")
+        continue
+
+    # Trendline hesaplama (4. dereceden polinom)
     polynomial_coefficients = np.polyfit(x, y, 4)
-
-    # polynomial equation function
     polynomial = np.poly1d(polynomial_coefficients)
 
-    # plot of the trendline
+    # Grafik için x ekseninde çizim aralığını belirliyoruz
     x_graph = np.linspace(min(x), max(x), 100)
     y_graph = polynomial(x_graph)
 
-    plt.plot(x, y, 'bo', label=f'{x_name} vs {y_name}')
-    plt.plot(x_graph, y_graph, 'r-', label='4th degree polynomial trendline')
+    # Grafik üzerine sadece trendline'ı çiziyoruz
+    color = next(colors)
+    line_style = next(line_styles)
+    plt.plot(x_graph, y_graph, line_style, color=color, label=f'{wind_turbine_name}')
 
-    # display the polynomial equation at the top (outside the plot area)
-    equation_text = f"y = {polynomial_coefficients[0]:.4f}x⁴ + {polynomial_coefficients[1]:.4f}x³ + {polynomial_coefficients[2]:.4f}x² + {polynomial_coefficients[3]:.4f}x + {polynomial_coefficients[4]:.4f}"
-    plt.figtext(0.5, 0.95, equation_text, ha='center', va='top', fontsize=12, bbox=dict(facecolor='white', alpha=0.7))
+    # kullanıcıya başka bir rüzgar tribünü eklemek isteyip istemediğini soruyor
+    another = input("Wanna add another wind turbine? (Y/N): ")
+    if another.upper() != 'Y':
+        break
 
-    # labels of the graph 
-    plt.xlabel(x_name)
-    plt.ylabel(y_name)
-    plt.legend()
-    plt.show()
-      
-    # Output the polynomial coefficients
-    print("Polynomial Coefficients:", polynomial_coefficients)
+# Grafik gösterimi
+plt.xlabel(x_name)
+plt.ylabel(y_name)
+plt.legend(loc='best')
+plt.title("Wind Turbine Trendline Graph")
+plt.show()
+
 
 
 
